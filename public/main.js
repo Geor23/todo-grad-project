@@ -55,8 +55,8 @@ function reloadTodoList() {
             var deleteText = document.createTextNode("Delete element");
             deleteButton.appendChild(deleteText);
             listItem.textContent = todo.title;
+            listItem.appendChild(deleteButton);
             todoList.appendChild(listItem);
-            todoList.appendChild(deleteButton);
         });
     });
 }
