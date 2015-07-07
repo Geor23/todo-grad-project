@@ -57,10 +57,9 @@ function reloadTodoList() {
             listItem.textContent = todo.title;
             listItem.appendChild(deleteButton);
             todoList.appendChild(listItem);
-            deleteButton.onClick = function () {
-                alert("element deleted!");
+            deleteButton.onclick = function () {
                 todoList.removeChild(listItem);
-            }
+            };
         });
     });
 }
