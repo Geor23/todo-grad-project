@@ -51,8 +51,12 @@ function reloadTodoList() {
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
             var listItem = document.createElement("li");
+            var deleteButton = document.createElement("BUTTON");
+            var deleteText = document.createTextNode("Delete element");
+            deleteButton.appendChild(deleteText);
             listItem.textContent = todo.title;
             todoList.appendChild(listItem);
+            todoList.appendChild(deleteButton);
         });
     });
 }
