@@ -70,6 +70,12 @@ module.exports.addTodo = function(server, text) {
     server.driver.findElement(webdriver.By.id("submit-todo")).click();
 };
 
+module.exports.deleteItem = function(server) {
+    var todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
+    server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
+    server.driver.findElement(webdriver.By.css("#todo-list li button")).click();
+};
+
 module.exports.setupErrorRoute = function(server, action, route) {
     if (action === "get") {
         server.router.get(route, function(req, res) {
@@ -78,6 +84,11 @@ module.exports.setupErrorRoute = function(server, action, route) {
     }
     if (action === "post") {
         server.router.post(route, function(req, res) {
+            res.sendStatus(500);
+        });
+    }
+    if (action === "delete") {
+        server.router.delete(route, function(req, res) {
             res.sendStatus(500);
         });
     }

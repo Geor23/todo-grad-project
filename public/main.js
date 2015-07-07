@@ -51,22 +51,46 @@ function reloadTodoList(callback) {
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
             var listItem = document.createElement("li");
-            var deleteButton = document.createElement("BUTTON");
-            var deleteText = document.createTextNode("Delete element");
-            deleteButton.appendChild(deleteText);
             listItem.textContent = todo.title;
             var idItem = todo.id;
+
+            var deleteButton = document.createElement("BUTTON");
+            var deleteText = document.createTextNode("Delete");
+            deleteButton.appendChild(deleteText);
             listItem.appendChild(deleteButton);
+
+            var complete = document.createElement("BUTTON");
+            var completeText = document.createTextNode("Complete");
+            complete.appendChild(completeText);
+            listItem.appendChild(complete);
+
+            listItem.setAttribute("isComplete", "false");
+
+
             todoList.appendChild(listItem);
+
+            complete.onclick = function () {
+                var createRequest = new XMLHttpRequest();
+                createRequest.open("PUT", "/api/todo/" + idItem + "/iscomplete" + " true");
+                createRequest.onload = function() {
+                    if (this.status === 200) {
+                        reloadTodoList();
+                    } else {
+                        error.textContent = "Failed to update item. Server returned ";
+                        error.textContent += this.status + " - " + this.responseText;
+                    }
+                };
+                createRequest.send();
+            };
+
             deleteButton.onclick = function () {
                 var createRequest = new XMLHttpRequest();
                 createRequest.open("DELETE", "/api/todo/" + idItem);
                 createRequest.onload = function() {
                     if (this.status === 200) {
                         reloadTodoList();
-                        //callback(JSON.parse(this.responseText));
                     } else {
-                        error.textContent = "Failed to get new list. Server returned ";
+                        error.textContent = "Failed to delete item. Server returned ";
                         error.textContent += this.status + " - " + this.responseText;
                     }
                 };

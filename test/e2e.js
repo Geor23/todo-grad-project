@@ -70,5 +70,25 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("checking delete button", function () {
+        testing.it("delete item from list", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.addTodo(server, "Another new todo item");
+            helpers.deleteItem(server);
+            helpers.getTodoList(server).then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
+        testing.it("displays an error if the request fails", function() {
+            helpers.setupErrorRoute(server, "delete", "/api/todo/:id");
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.deleteItem(server);
+            helpers.getErrorText(server).then(function(text) {
+                assert.equal(text, "Failed to delete item. Server returned 500 - Internal Server Error");
+            });
+        });
+    });
 });
 

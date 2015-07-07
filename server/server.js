@@ -43,6 +43,19 @@ module.exports = function(port, middleware) {
         }
     });
 
+    app.put("/api/todo/:id", function(req, res) {
+        var ntodo = req.body;
+        var id = ntodo.id;
+        var todo = getTodo(id);
+        if (todo) {
+            todos.pop(todo);
+            todos.push(ntodo);
+            res.sendStatus(200);
+        } else {
+            res.sendStatus(404);
+        }
+    });
+
     function getTodo(id) {
         return _.find(todos, function(todo) {
             return todo.id === id;
