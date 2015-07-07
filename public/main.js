@@ -42,7 +42,7 @@ function getTodoList(callback) {
     createRequest.send();
 }
 
-function reloadTodoList() {
+function reloadTodoList(callback) {
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
     }
@@ -55,10 +55,22 @@ function reloadTodoList() {
             var deleteText = document.createTextNode("Delete element");
             deleteButton.appendChild(deleteText);
             listItem.textContent = todo.title;
+            var idItem = todo.id;
             listItem.appendChild(deleteButton);
             todoList.appendChild(listItem);
             deleteButton.onclick = function () {
-                todoList.removeChild(listItem);
+                var createRequest = new XMLHttpRequest();
+                createRequest.open("DELETE", "/api/todo/" + idItem);
+                createRequest.onload = function() {
+                    if (this.status === 200) {
+                        reloadTodoList();
+                        //callback(JSON.parse(this.responseText));
+                    } else {
+                        error.textContent = "Failed to get new list. Server returned ";
+                        error.textContent += this.status + " - " + this.responseText;
+                    }
+                };
+                createRequest.send();
             };
         });
     });
