@@ -90,5 +90,15 @@ testing.describe("end to end", function() {
             });
         });
     });
+    /*testing.describe("update function", function () {
+        testing.it("update item from list", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.updateItem(server);
+            helpers.getTodoList(server).then(function(elements) {
+                assert.equal(elements.value, "updated item");
+            });
+        });
+    });*/
 });
 

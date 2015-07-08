@@ -3,6 +3,7 @@ var todoListPlaceholder = document.getElementById("todo-list-placeholder");
 var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
+var table = document.getElementById("table");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -47,29 +48,51 @@ function reloadTodoList(callback) {
         todoList.removeChild(todoList.firstChild);
     }
     todoListPlaceholder.style.display = "block";
+
+    var table = document.createElement("table");
+
     getTodoList(function(todos) {
         todoListPlaceholder.style.display = "none";
+
         todos.forEach(function(todo) {
+
+            var row = document.createElement("tr");
+
+            var celltick = document.createElement("td");
+            var tick = document.createElement("input");
+            tick.setAttribute("type", "checkbox");
+            celltick.appendChild(tick);
+
+            var cellitem = document.createElement("td");
             var listItem = document.createElement("li");
             listItem.textContent = todo.title;
             var idItem = todo.id;
-
-            var deleteButton = document.createElement("BUTTON");
-            var deleteText = document.createTextNode("Delete");
-            deleteButton.appendChild(deleteText);
-            listItem.appendChild(deleteButton);
-
-            var complete = document.createElement("BUTTON");
-            var completeText = document.createTextNode("Complete");
-            complete.appendChild(completeText);
-            listItem.appendChild(complete);
+            cellitem.appendChild(listItem);
 
             listItem.setAttribute("isComplete", "false");
+            listItem.setAttribute("contenteditable", "false");
 
+            var celledit = document.createElement("td");
+            var edit = document.createElement("BUTTON");
+            var editText = document.createTextNode("✎");
+            edit.appendChild(editText);
+            celledit.appendChild(edit);
 
-            todoList.appendChild(listItem);
+            var celldel = document.createElement("td");
+            var deleteButton = document.createElement("BUTTON");
+            var deleteText = document.createTextNode("✗");
+            deleteButton.appendChild(deleteText);
+            celldel.appendChild(deleteButton);
+            
+            row.appendChild(celltick);
+            row.appendChild(cellitem);
+            row.appendChild(celledit);
+            row.appendChild(celldel);
 
-            complete.onclick = function () {
+            table.appendChild(row);
+            todoList.appendChild(table);
+
+            tick.onclick = function () {
                 var createRequest = new XMLHttpRequest();
                 createRequest.open("PUT", "/api/todo/" + idItem + "/iscomplete" + " true");
                 createRequest.onload = function() {
@@ -95,6 +118,38 @@ function reloadTodoList(callback) {
                     }
                 };
                 createRequest.send();
+            };
+
+            edit.onclick = function () {
+                listItem.setAttribute("contenteditable", "true");
+                var updateButton = document.createElement("BUTTON");
+                var updateText = document.createTextNode("✓");
+                updateButton.appendChild(updateText);
+                celledit.removeChild(edit);
+                celledit.appendChild(updateButton);
+
+                updateButton.onclick = function() {
+                    celledit.removeChild(updateButton);
+                    celledit.appendChild(edit);
+                    var title = listItem.textContent;
+                    var createRequest = new XMLHttpRequest();
+                    createRequest.open("PUT", "/api/todo/" + idItem);
+                    createRequest.setRequestHeader("Content-type", "application/json");
+                    createRequest.send(JSON.stringify({
+                        title: title,
+                        id : idItem
+                    }));
+                    createRequest.onload = function() {
+                        if (this.status === 200) {
+                            reloadTodoList();
+                            listItem.removeAttribute("contenteditable");
+                        } else {
+                            error.textContent = "Failed to update item. Server returned ";
+                            error.textContent += this.status + " - " + this.responseText;
+                            listItem.removeAttribute("contenteditable");
+                        }
+                    };
+                };
             };
         });
     });
