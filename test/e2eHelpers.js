@@ -73,14 +73,44 @@ module.exports.addTodo = function(server, text) {
 module.exports.deleteItem = function(server) {
     var todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
     server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
-    server.driver.findElement(webdriver.By.css("#todo-list li button")).click();
+    server.driver.findElement(webdriver.By.css("#del")).click();
 };
 
-/*module.exports.updateItem = function(server) {
+module.exports.deleteAllItems = function(server) {
+    var todoListPlaceholder = server.driver.findElement(webdriver.By.css("#todo-list button"));
+    server.driver.wait(webdriver.until.elementIsVisible(todoListPlaceholder), 5000);
+    server.driver.findElement(webdriver.By.css("#todo-list button")).click();
+};
+
+module.exports.updateItem = function(server) {
     var todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
     server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
-    server.driver.findElement(webdriver.By.css("#todo-list li button")).click();
-};*/
+    server.driver.findElement(webdriver.By.css("#edit")).click();
+    var todoListPl = server.driver.findElement(webdriver.By.css("#done"));
+    server.driver.wait(webdriver.until.elementIsVisible(todoListPl), 5000);
+    var item = server.driver.findElement(webdriver.By.id("item")).click();
+    server.driver.findElement(webdriver.By.id("item")).sendKeys("u");
+    server.driver.wait(webdriver.until.elementIsVisible(todoListPl), 5000);
+    server.driver.findElement(webdriver.By.css("#done")).click();
+    return server.driver.findElement(webdriver.By.id("item")).getText();
+};
+
+module.exports.completeItem = function(server) {
+    server.driver.findElement(webdriver.By.css("#tick")).click();
+    var todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
+    server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
+    return server.driver.findElement(webdriver.By.css("#tick")).getAttribute("checked");
+};
+
+module.exports.incompleteItem = function(server) {
+    server.driver.findElement(webdriver.By.css("#tick")).click();
+    var todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
+    server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
+    server.driver.findElement(webdriver.By.css("#tick")).click();
+    todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
+    server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
+    return server.driver.findElement(webdriver.By.css("#tick")).getAttribute("checked");
+};
 
 module.exports.setupErrorRoute = function(server, action, route) {
     if (action === "get") {
@@ -90,6 +120,16 @@ module.exports.setupErrorRoute = function(server, action, route) {
     }
     if (action === "post") {
         server.router.post(route, function(req, res) {
+            res.sendStatus(500);
+        });
+    }
+    if (action === "delete") {
+        server.router.delete(route, function(req, res) {
+            res.sendStatus(500);
+        });
+    }
+    if (action === "put") {
+        server.router.put(route, function(req, res) {
             res.sendStatus(500);
         });
     }

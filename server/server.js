@@ -51,7 +51,6 @@ module.exports = function(port, middleware) {
         if (todo) {
             todo.title = ntodo;
             todo.isComplete = ncomplete;
-            console.log(ncomplete);
             res.set("Location", "/api/todo/" + id.toString());
             res.sendStatus(200);
         } else {

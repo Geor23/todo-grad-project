@@ -17,6 +17,7 @@ testing.describe("end to end", function() {
         helpers.reportCoverage();
     });
 
+    //page load
     testing.describe("on page load", function() {
         testing.it("displays TODO title", function() {
             helpers.navigateToSite(server);
@@ -38,6 +39,8 @@ testing.describe("end to end", function() {
             });
         });
     });
+
+    //create item
     testing.describe("on create todo item", function() {
         testing.it("clears the input field", function() {
             helpers.navigateToSite(server);
@@ -70,6 +73,8 @@ testing.describe("end to end", function() {
             });
         });
     });
+
+    //delete
     testing.describe("checking delete button", function () {
         testing.it("delete item from list", function() {
             helpers.navigateToSite(server);
@@ -90,15 +95,69 @@ testing.describe("end to end", function() {
             });
         });
     });
-    /*testing.describe("update function", function () {
-        testing.it("update item from list", function() {
+
+    //delete all
+    testing.describe("checking delete all button", function () {
+        testing.it("delete all completed items from list", function() {
             helpers.navigateToSite(server);
             helpers.addTodo(server, "New todo item");
-            helpers.updateItem(server);
+            helpers.completeItem(server);
+            helpers.deleteAllItems(server);
             helpers.getTodoList(server).then(function(elements) {
-                assert.equal(elements.value, "updated item");
+                assert.equal(elements.length, 0);
             });
         });
-    });*/
+        testing.it("displays an error if the request fails", function() {
+            helpers.setupErrorRoute(server, "delete", "/api/todo/:id");
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.completeItem(server);
+            helpers.deleteAllItems(server);
+            helpers.getErrorText(server).then(function(text) {
+                assert.equal(text, "Failed to delete item. Server returned 500 - Internal Server Error");
+            });
+        });
+    });
+
+    //complete
+    testing.describe("checking complete button", function () {
+        testing.it("mark item as complete", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            var value = helpers.completeItem(server);
+            value.then(function(value) {
+                assert.equal(value, "true");
+            });
+        });
+        testing.it("mark item as incomplete", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            var value = helpers.incompleteItem(server);
+            value.then(function(value) {
+                assert.equal(value, "false");
+            });
+        });
+        testing.it("displays an error if the request fails", function() {
+            helpers.setupErrorRoute(server, "put", "/api/todo/:id");
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.completeItem(server);
+            helpers.getErrorText(server).then(function(text) {
+                assert.equal(text, "Failed to update item. Server returned 500 - Internal Server Error");
+            });
+        });
+    });
+
+    //edit function
+    testing.describe("checking edit function", function () {
+        testing.it("update item from list", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "N");
+            var text = helpers.updateItem(server);
+            text.then(function(text) {
+                assert.equal(text, "Nu");
+            });
+        });
+    });
 });
 

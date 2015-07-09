@@ -67,15 +67,15 @@ function reloadTodoList(callback) {
             if (todo.isComplete === "false") {
                 leftItems += 1 ;
             }
-
-            if ((todo.isComplete === "true" && dropdown.value !== "active") || (todo.isComplete === "false" && dropdown.value !== "completed")) {
-
-
+            var first = (todo.isComplete === "true" && dropdown.value !== "active");
+            var second = (todo.isComplete === "false" && dropdown.value !== "completed");
+            if (first || second) {
                 var row = document.createElement("tr");
 
                 var celltick = document.createElement("td");
                 var tick = document.createElement("input");
                 tick.setAttribute("type", "checkbox");
+                tick.setAttribute("id", "tick");
                 if (todo.isComplete === "true") {
                     tick.setAttribute("checked", "true");
                 }
@@ -87,6 +87,7 @@ function reloadTodoList(callback) {
                 var cellitem = document.createElement("td");
                 var listItem = document.createElement("li");
                 listItem.textContent = todo.title;
+                listItem.setAttribute("id", "item");
                 var idItem = todo.id;
                 cellitem.appendChild(listItem);
 
@@ -96,12 +97,14 @@ function reloadTodoList(callback) {
                 var edit = document.createElement("BUTTON");
                 var editText = document.createTextNode("✎");
                 edit.appendChild(editText);
+                edit.setAttribute("id", "edit");
                 celledit.appendChild(edit);
 
                 var celldel = document.createElement("td");
                 var deleteButton = document.createElement("BUTTON");
                 var deleteText = document.createTextNode("✗");
                 deleteButton.appendChild(deleteText);
+                deleteButton.setAttribute("id", "del");
                 celldel.appendChild(deleteButton);
 
                 row.appendChild(celltick);
@@ -182,6 +185,7 @@ function reloadTodoList(callback) {
                     var updateButton = document.createElement("BUTTON");
                     var updateText = document.createTextNode("✓");
                     updateButton.appendChild(updateText);
+                    updateButton.setAttribute("id", "done");
                     celledit.removeChild(edit);
                     celledit.appendChild(updateButton);
 
@@ -189,7 +193,7 @@ function reloadTodoList(callback) {
                         celledit.removeChild(updateButton);
                         celledit.appendChild(edit);
                         var title = listItem.textContent;
-                        var complete = listItem.isComplete;
+                        var complete = todo.isComplete;
                         var createRequest = new XMLHttpRequest();
                         createRequest.open("PUT", "/api/todo/" + idItem);
                         createRequest.setRequestHeader("Content-type", "application/json");
@@ -211,24 +215,21 @@ function reloadTodoList(callback) {
                     };
                 };
             }
-           
         });
-        if ( leftItems === totalItems ) {
+        if (leftItems === totalItems) {
             deleteAll.setAttribute("class", "buttonall");
         }
         else {
             deleteAll.setAttribute("class", "button");
         }
 
-        itemsLeft.textContent = "You have " + leftItems.toString() + " items left to complete out of " + totalItems.toString();
+        itemsLeft.textContent = "You have " + leftItems.toString();
+        itemsLeft.textContent += " items left to complete out of " + totalItems.toString();
     });
-    
 }
 
 reloadTodoList();
 
- dropdown.onchange = function () {
-    
-        reloadTodoList();
-   
+dropdown.onchange = function () {
+    reloadTodoList();
 };
