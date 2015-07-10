@@ -107,6 +107,14 @@ testing.describe("end to end", function() {
                 assert.equal(elements.length, 0);
             });
         });
+        testing.it("delete all completed items else from list", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.deleteAllItems(server);
+            helpers.getTodoList(server).then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
         testing.it("displays an error if the request fails", function() {
             helpers.setupErrorRoute(server, "delete", "/api/todo/:id");
             helpers.navigateToSite(server);
@@ -134,7 +142,7 @@ testing.describe("end to end", function() {
             helpers.addTodo(server, "New todo item");
             var value = helpers.incompleteItem(server);
             value.then(function(value) {
-                assert.equal(value, "false");
+                assert.equal(value, null);
             });
         });
         testing.it("displays an error if the request fails", function() {
@@ -156,6 +164,36 @@ testing.describe("end to end", function() {
             var text = helpers.updateItem(server);
             text.then(function(text) {
                 assert.equal(text, "Nu");
+            });
+        });
+        testing.it("displays an error if the request fails", function() {
+            helpers.setupErrorRoute(server, "put", "/api/todo/:id");
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New todo item");
+            helpers.updateItem(server);
+            helpers.getErrorText(server).then(function(text) {
+                assert.equal(text, "Failed to update item. Server returned 500 - Internal Server Error");
+            });
+        });
+    });
+
+    //dropdown click
+    testing.describe("checking dropdown click function", function () {
+        testing.it("dropdown on change function", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New item");
+            helpers.dropdown(server);
+            helpers.getTodoList(server).then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
+        testing.it("dropdown on change false function", function() {
+            helpers.navigateToSite(server);
+            helpers.addTodo(server, "New item");
+            helpers.completeItem(server);
+            helpers.dropdown(server);
+            helpers.getTodoList(server).then(function(elements) {
+                assert.equal(elements.length, 0);
             });
         });
     });

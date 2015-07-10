@@ -48,14 +48,10 @@ module.exports = function(port, middleware) {
         var ncomplete = req.body.isComplete;
         var id = req.params.id;
         var todo = getTodo(id);
-        if (todo) {
-            todo.title = ntodo;
-            todo.isComplete = ncomplete;
-            res.set("Location", "/api/todo/" + id.toString());
-            res.sendStatus(200);
-        } else {
-            res.sendStatus(404);
-        }
+        todo.title = ntodo;
+        todo.isComplete = ncomplete;
+        res.set("Location", "/api/todo/" + id.toString());
+        res.sendStatus(200);
     });
 
     function getTodo(id) {

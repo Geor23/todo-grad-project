@@ -112,6 +112,15 @@ module.exports.incompleteItem = function(server) {
     return server.driver.findElement(webdriver.By.css("#tick")).getAttribute("checked");
 };
 
+module.exports.dropdown = function(server) {
+    server.driver.findElement(webdriver.By.css("#dropdown")).click();
+    var todoListPl = server.driver.findElement(webdriver.By.id("b"));
+    server.driver.wait(webdriver.until.elementIsVisible(todoListPl), 5000);
+    server.driver.findElement(webdriver.By.css("#b")).click();
+    var todoListPlaceholder = server.driver.findElement(webdriver.By.id("todo-list-placeholder"));
+    server.driver.wait(webdriver.until.elementIsNotVisible(todoListPlaceholder), 5000);
+};
+
 module.exports.setupErrorRoute = function(server, action, route) {
     if (action === "get") {
         server.router.get(route, function(req, res) {
